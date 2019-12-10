@@ -43,25 +43,25 @@
 // };
 module.exports = {
     admin_openid(data) {
-        return request('http://127.0.0.1:3001/api/get/admin/openid', data,"GET");
+        return request('https://1434253600.xyz/api/get/admin/openid', data,"GET");
     },
     admin_userinfo(data) {
-        return request('http://127.0.0.1:3001/api/get/admin/userinfo', data,"GET");
+        return request('https://1434253600.xyz/api/get/admin/userinfo', data,"GET");
     }, 
     admin_good_list(data) {
-        return request('http://127.0.0.1:3001/api/get/admin/good_list', data,"GET");
+        return request('https://1434253600.xyz/api/get/admin/good_list', data,"GET");
     },
     admin_more(data) {
-        return request('http://127.0.0.1:3001/api/get/admin/more', data,"GET");
+        return request('https://1434253600.xyz/api/get/admin/more', data,"GET");
     },
     admin_order_list(data) {
-        return request('http://127.0.0.1:3001/api/get/admin/order_list', data,"GET");
+        return request('https://1434253600.xyz/api/get/admin/order_list', data,"GET");
     },
     admin_address(data) {
-        return request('http://127.0.0.1:3001/api/get/admin/address', data,"GET");
+        return request('https://1434253600.xyz/api/get/admin/address', data,"GET");
     },
     admin_detail(data) {
-        return request('http://127.0.0.1:3001/api/get/admin/detail', data,"GET");
+        return request('https://1434253600.xyz/api/get/admin/detail', data,"GET");
     } 
 }
 function request(url, data={}, type) {

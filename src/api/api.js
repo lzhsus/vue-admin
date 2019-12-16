@@ -43,33 +43,43 @@
 // };
 module.exports = {
     admin_openid(data) {
-        return request('https://1434253600.xyz/api/get/admin/openid', data,"GET");
+        return request('api/get/admin/openid', data,"GET");
     },
     admin_userinfo(data) {
-        return request('https://1434253600.xyz/api/get/admin/userinfo', data,"GET");
+        return request('api/get/admin/userinfo', data,"GET");
     }, 
     admin_good_list(data) {
-        return request('https://1434253600.xyz/api/get/admin/good_list', data,"GET");
+        return request('api/get/admin/good_list', data,"GET");
     },
     admin_more(data) {
-        return request('https://1434253600.xyz/api/get/admin/more', data,"GET");
+        return request('api/get/admin/more', data,"GET");
     },
     admin_order_list(data) {
-        return request('https://1434253600.xyz/api/get/admin/order_list', data,"GET");
+        return request('api/get/admin/order_list', data,"GET");
     },
     admin_address(data) {
-        return request('https://1434253600.xyz/api/get/admin/address', data,"GET");
+        return request('api/get/admin/address', data,"GET");
     },
     admin_detail(data) {
-        return request('https://1434253600.xyz/api/get/admin/detail', data,"GET");
-    } 
+        return request('api/get/admin/detail', data,"GET");
+    } ,
+    admin_events(data) {
+        return request('api/get/admin/events', data,"GET");
+    },
+    admin_banner(data) {
+        return request('api/get/admin/banner', data,"GET");
+    },
+    admin_hide(data) {
+        return request('api/get/admin/hide', data,"GET");
+    },
+    
 }
 function request(url, data={}, type) {
     return new Promise((resolve, reject)=>{       
 
         var $ajax = null;
         if(url.indexOf('http')==-1){
-            url=vueApp.config.serverPathDB + url
+            url="https://1434253600.xyz/" + url
         }
         if( type=='POST' ){
             $ajax = $.post( url, data);

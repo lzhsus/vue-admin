@@ -30,8 +30,13 @@ import detail from './views/order/detail.vue'
 import goodAll from './views/goods/good_all.vue'
 import goodClass from './views/goods/good_class.vue'
 import goodBanner from './views/goods/good_banner.vue'
+/**
+ * 活动
+ */
 
-
+import completeEvents from './views/complete/events.vue'
+import completeBanner from './views/complete/banner.vue'
+import completeHide from './views/complete/hide.vue'
 let routes = [
     {
         path: '/login',
@@ -74,6 +79,16 @@ let routes = [
             { path: '/goodAll', component: goodAll, name: 'goodAll',},
             { path: '/goodClass', component: goodClass, name: 'goodClass',},
             { path: '/goodBanner', component: goodBanner, name: 'goodBanner',}
+        ]
+    },{
+        path: '/',
+        component: Home,
+        name: '活动',
+        iconCls: 'el-icon-message',//图标样式class
+        children: [
+            { path: '/completeEvents', component: completeEvents, name: 'completeEvents',},
+            { path: '/completeBanner', component: completeBanner, name: 'completeBanner',},
+            { path: '/completeHide', component: completeHide, name: 'completeHide',}
         ]
     },
     //{ path: '/main', component: Main },

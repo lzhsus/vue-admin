@@ -39,6 +39,8 @@
                 　　</template>
                 </el-table-column>
 				<el-table-column align="center" prop="creat_time" label="创建时间" min-width="180" sortable></el-table-column>
+                <el-table-column align="center" prop="updata_time" label="更新时间" min-width="180" sortable></el-table-column>
+
 				<el-table-column label="操作" width="150">
 					<template scope="scope">
 						<el-button size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
@@ -56,23 +58,20 @@
          <!--编辑界面-->
 		<el-dialog title="编辑" v-model="editFormVisible" :close-on-click-modal="false">
 			<el-form :model="editForm" label-width="80px" ref="editForm">
-				<el-form-item label="连接" prop="link">
-					<el-input v-model="addForm.link" auto-complete="off"></el-input>
-				</el-form-item>
 				<el-form-item label="name" prop="name">
-					<el-input v-model="addForm.name" auto-complete="off"></el-input>
+					<el-input v-model="editForm.name" auto-complete="off"></el-input>
 				</el-form-item>
 				<el-form-item label="sign" prop="sign">
-					<el-input v-model="addForm.sign" auto-complete="off"></el-input>
+					<el-input v-model="editForm.sign" auto-complete="off"></el-input>
 				</el-form-item>
 				<el-form-item label="data" prop="data">
-					<el-input v-model="addForm.data" auto-complete="off"></el-input>
+					<el-input v-model="editForm.data" auto-complete="off"></el-input>
 				</el-form-item>
 				<el-form-item label="goods_id" prop="goods_id">
-					<el-input v-model="addForm.goods_id" auto-complete="off"></el-input>
+					<el-input v-model="editForm.goods_id" auto-complete="off"></el-input>
 				</el-form-item>
 				<el-form-item label="page" prop="page">
-					<el-input v-model="addForm.page" auto-complete="off"></el-input>
+					<el-input v-model="editForm.page" auto-complete="off"></el-input>
 				</el-form-item>
                 <el-upload
                     class="upload-demo"
@@ -81,8 +80,8 @@
                     :on-preview="handlePreview"
                     :on-change="onChange"
                     :on-remove="handleRemove"
-                    :on-success="uploadSuccess"
-                    :file-list="fileList"
+                    :on-success="uploadSuccess2"
+                    :file-list="editFileList"
                     :auto-upload="false"
                     list-type="picture">
                     <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
@@ -104,9 +103,6 @@
         <!--新增界面-->
 		<el-dialog title="新增" v-model="addFormVisible" :close-on-click-modal="false">
 			<el-form :model="addForm" label-width="80px" ref="addForm">
-				<el-form-item label="连接" prop="link">
-					<el-input v-model="addForm.link" auto-complete="off"></el-input>
-				</el-form-item>
 				<el-form-item label="name" prop="name">
 					<el-input v-model="addForm.name" auto-complete="off"></el-input>
 				</el-form-item>
@@ -186,6 +182,7 @@
                     sign: null,
                     img_url:""
                 },
+                editFileList:[],
                 //新增界面数据
                 fileList: [
                 ],
@@ -262,8 +259,13 @@
 			},
 			//显示编辑界面
 			handleEdit: function (index, row) {
+                console.log(row)
 				this.editFormVisible = true;
-				this.editForm = Object.assign({}, row);
+                this.editForm = Object.assign({}, row);
+                // this.editFileList[0]=row.img_url
+
+                this.editForm.img_url=row.img_url.replace('https://1434253600.xyz/','')
+                
             },
             //显示新增界面
 			handleAdd: function () {
@@ -273,6 +275,33 @@
                     is_on_line: "false",
 				};
             },
+            editSubmit(){
+                var editForm=this.editForm
+                console.log(this.editFileList)
+               var data=editForm;
+                this.$refs.editForm.validate((valid) => {
+					if (valid) { 
+						this.$confirm('确认提交吗？', '提示', {}).then(() => {
+                            data.all=1
+                            data.type=2
+                            Api.admin_banner(data).then(res=>{
+                                res=JSON.parse(res)
+                                if(res['success']){
+                                    this.$message({
+                                        message: '提交成功',
+                                        type: 'success'
+                                    });
+                                    this.$refs['editForm'].resetFields();
+                                    this.editFormVisible = false;
+                                }else{
+                                    this.$message.error('该用户不存在！');
+                                }
+                            })
+                        })
+                    }
+                })
+
+            },
             //新增
 			addSubmit: function () {
                 console.log('addForm',this.addForm)
@@ -281,7 +310,7 @@
 					if (valid) {
 						this.$confirm('确认提交吗？', '提示', {}).then(() => {
                             var data=this.addForm;
-                            data.page=1
+                          
                             data.type=4
 
                             Api.admin_banner(data).then(res=>{
@@ -307,6 +336,13 @@
                 console.log("上传文件成功fileList" ,fileList);
                 // response：即为后端传来的数据，这里我返回的是图片的路径
                 this.addForm.img_url=response.data[0]
+            },
+            uploadSuccess2(response, file, fileList){
+                console.log("上传文件成功response" ,response);
+                console.log("上传文件成功file" ,file);
+                console.log("上传文件成功fileList" ,fileList);
+                // response：即为后端传来的数据，这里我返回的是图片的路径
+                this.editForm.img_url=response.data[0]
             },
              submitUpload() {
                 this.$refs.upload.submit();

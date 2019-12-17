@@ -59,6 +59,11 @@
 		<template>
 			<el-table :data="users" highlight-current-row max-height="850" height="600" v-loading="loading" style="width: 100%;">
 				<el-table-column type="index" width="60"></el-table-column>
+                <el-table-column align="center" label="操作" width="120">
+					<template scope="scope">
+					    <el-button type="danger" size="small" @click="handleLook(scope.$index, scope.row)">查看详情</el-button>
+                    </template>
+                </el-table-column>
 				<el-table-column align="center" prop="id" label="ID" width="120" sortable></el-table-column>
 				<el-table-column align="center" prop="code" label="code" width="120" sortable></el-table-column>
 				<el-table-column align="center" prop="price" label="价格" min-width="120" sortable></el-table-column>				
@@ -83,6 +88,8 @@
                 　　</template>
                 </el-table-column>
 				<el-table-column align="center" prop="creat_time" label="创建时间" min-width="180" sortable></el-table-column>
+                <el-table-column align="center" prop="updata_time" label="更新时间" min-width="180" sortable></el-table-column>
+
 				<el-table-column label="操作" width="150">
 					<template scope="scope">
 						<el-button size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
@@ -96,7 +103,58 @@
 			<el-button type="danger">批量删除</el-button>
 			<el-pagination layout="prev, pager, next" @current-change="handleCurrentChange" :page-size="20" :total="total" style="float:right;">
 			</el-pagination>
-		</el-col>
+		</el-col> 
+        <!--编辑界面-->
+		<el-dialog title="编辑" v-model="editFormVisible" :close-on-click-modal="false">
+			<el-form :model="editForm" label-width="80px" ref="editForm">
+				<el-form-item label="名称" prop="name">
+					<el-input v-model="editForm.name" auto-complete="off"></el-input>
+				</el-form-item>
+                <el-form-item label="大类class" prop="class">
+                    <el-input v-model="editForm.class" auto-complete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="子类sign" prop="sign">
+                    <el-input v-model="editForm.sign" auto-complete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="code" prop="code">
+                    <el-input v-model="editForm.code" auto-complete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="inventory数量" prop="inventory">
+                    <el-input v-model="editForm.inventory" auto-complete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="page" prop="page">
+                    <el-input v-model="editForm.page" auto-complete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="price" prop="price">
+                    <el-input v-model="editForm.price" auto-complete="off"></el-input>
+                </el-form-item>
+                <el-upload
+                    class="upload-demo"
+                    ref="upload"
+                    action="https://1434253600.xyz/api/upload/uploadfile"
+                    :on-preview="handlePreview"
+                    :on-change="onChange"
+                    :on-remove="handleRemove"
+                    :on-success="uploadSuccess2"
+                    :file-list="editFileList"
+                    :auto-upload="false"
+                    list-type="picture">
+                    <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
+                    <el-button style="margin-left: 10px;" size="small" type="success"  @click="submitUpload">上传到服务器</el-button>
+                    <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb，且只能上传一张</div>
+                </el-upload>
+                <!-- img_url -->
+                <el-form-item>
+                    <el-form-item label="是否上线">
+                        <el-switch v-model="addForm.is_on_line" on-color="#00A854" on-text="启动" on-value="true" off-color="#F04134" off-text="禁止" off-value="false"></el-switch>          
+				    </el-form-item>
+                </el-form-item> 
+			</el-form>
+			<div slot="footer" class="dialog-footer">
+				<el-button @click.native="editFormVisible = false">取消</el-button>
+				<el-button type="primary" @click.native="editSubmit" :loading="editLoading">提交</el-button>
+			</div>
+		</el-dialog>
         <!--新增界面-->
 		<el-dialog title="新增" v-model="addFormVisible" :close-on-click-modal="false">
 			<el-form :model="addForm" label-width="80px" ref="addForm">
@@ -171,9 +229,24 @@
 				page: 1,
 				loading: false,
                 users: [],
+                editFormVisible:false,
                 addFormVisible: false,//新增界面是否显示
-				addLoading: false,
+                addLoading: false,
+                editLoading:false,
                 //新增界面数据
+                editFileList: [
+                ],
+				editForm: {
+                    class: "",
+                    code: '',
+                    inventory: 0,
+                    is_on_line: "false",
+                    name: "",
+                    page: '',
+                    price: "",
+                    sign: "",
+                    img_url:""
+				},
                 fileList: [
                 ],
 				addForm: {
@@ -294,6 +367,36 @@
 			handleEdit: function (index, row) {
 				this.editFormVisible = true;
 				this.editForm = Object.assign({}, row);
+                this.editForm.img_url=row.img_url.replace('https://1434253600.xyz/','')
+            },
+            editSubmit(){
+                var editForm=this.editForm
+                console.log(this.editFileList)
+               var data=editForm;
+                this.$refs.editForm.validate((valid) => {
+					if (valid) { 
+						this.$confirm('确认提交吗？', '提示', {}).then(() => {
+                            data.all=1
+                            data.type=2
+                            console.log('data------',data)
+                            
+                            Api.admin_good_list(data).then(res=>{
+                                res=JSON.parse(res)
+                                if(res['success']){
+                                    this.$message({
+                                        message: '提交成功',
+                                        type: 'success'
+                                    });
+                                    this.$refs['editForm'].resetFields();
+                                    this.editFormVisible = false;
+                                }else{
+                                    this.$message.error('该用户不存在！');
+                                }
+                            })
+                        })
+                    }
+                })
+
             },
             //显示新增界面
 			handleAdd: function () {
@@ -344,6 +447,13 @@
                 // response：即为后端传来的数据，这里我返回的是图片的路径
                 this.addForm.img_url=response.data[0]
             },
+            uploadSuccess2(response, file, fileList){
+                console.log("上传文件成功response" ,response);
+                console.log("上传文件成功file" ,file);
+                console.log("上传文件成功fileList" ,fileList);
+                // response：即为后端传来的数据，这里我返回的是图片的路径
+                this.editForm.img_url=response.data[0]
+            },
              submitUpload() {
                 this.$refs.upload.submit();
             },
@@ -391,6 +501,20 @@
             },
             sx(){
                 this.adminUserinfo()
+            },
+            handleLook(index,row){
+                console.log(index,row)
+                this.$router.push({
+                    path: '/goodBanner', //跳转的路径
+                    params: {
+                        name: 'name',
+                        dataObj: row
+                    },
+                    query:{
+                        name: 'name',
+                        dataObj: row
+                    }
+                })
             }
 		},
 		mounted() {

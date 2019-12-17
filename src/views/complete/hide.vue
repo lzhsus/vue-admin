@@ -18,7 +18,7 @@
 			<el-table :data="users" highlight-current-row max-height="850" height="600" v-loading="loading" style="width: 100%;">
 				<el-table-column type="index" width="60"></el-table-column>
 				<el-table-column align="center" prop="id" label="ID" width="120" sortable></el-table-column>
-                <el-table-column>
+                <el-table-column label="is_on_line">
                     <template slot-scope="scope">
                         <el-switch v-model="scope.row.is_on_line"
                          on-color="#00A854" 

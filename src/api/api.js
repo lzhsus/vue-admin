@@ -41,6 +41,8 @@
 //         params: params
 //     });
 // };
+import { Loading } from 'element-ui';
+
 module.exports = {
     admin_openid(data) {
         return request('api/get/admin/openid', data,"GET");
@@ -74,12 +76,15 @@ module.exports = {
     },
     
 }
+// var sreverPath="https://1434253600.xyz/";
+var sreverPath="http://127.0.0.1:3001/";
+
 function request(url, data={}, type) {
     return new Promise((resolve, reject)=>{       
-
+        let loadingInstance = Loading.service();
         var $ajax = null;
         if(url.indexOf('http')==-1){
-            url="https://1434253600.xyz/" + url
+            url=sreverPath + url
         }
         if( type=='POST' ){
             $ajax = $.post( url, data);
@@ -97,7 +102,11 @@ function request(url, data={}, type) {
         })
         .fail(res=> {
             vueApp.alert('网络错误请重试！'); 
-            reject(res);
+
+            resolve(res);
+        })
+        .always(res=>{
+            loadingInstance.close();
         });
     })
 }

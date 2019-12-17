@@ -39,7 +39,10 @@
                     <img :src="scope.row.img_url" width="60" height="60" class="head_pic"/>
                 　　</template>
                 </el-table-column>
+                
 				<el-table-column align="center" prop="creat_time" label="创建时间" min-width="180" sortable></el-table-column>
+                <el-table-column align="center" prop="updata_time" label="更新时间" min-width="180" sortable></el-table-column>
+
 				<el-table-column label="操作" width="150">
 					<template scope="scope">
 						<el-button size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
@@ -92,8 +95,8 @@
                     :on-preview="handlePreview"
                     :on-change="onChange"
                     :on-remove="handleRemove"
-                    :on-success="uploadSuccess"
-                    :file-list="fileList"
+                    :on-success="uploadSuccess2"
+                    :file-list="editFileList"
                     :auto-upload="false"
                     list-type="picture">
                     <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
@@ -194,6 +197,7 @@
                 addFormVisible: false,//新增界面是否显示
                 addLoading: false,
                 editLoading:false,
+                editFileList:[],
                 //编辑界面数据
 				editForm: {
                     id:0,
@@ -288,10 +292,39 @@
 			},
 			//显示编辑界面
 			handleEdit: function (index, row) {
-                return
                 this.editFormVisible = true;
                 this.editForm = Object.assign({}, row);
+                this.editForm.img_url=row.img_url.replace('https://1434253600.xyz/','')
                 console.log(this.editForm)
+            },
+            editSubmit(){
+                var editForm=this.editForm
+                console.log(this.editFileList)
+               var data=editForm;
+                this.$refs.editForm.validate((valid) => {
+					if (valid) { 
+						this.$confirm('确认提交吗？', '提示', {}).then(() => {
+                            data.all=1
+                            data.type=2
+                            console.log('data------',data)
+                            
+                            Api.admin_more(data).then(res=>{
+                                res=JSON.parse(res)
+                                if(res['success']){
+                                    this.$message({
+                                        message: '提交成功',
+                                        type: 'success'
+                                    });
+                                    this.$refs['editForm'].resetFields();
+                                    this.editFormVisible = false;
+                                }else{
+                                    this.$message.error('该用户不存在！');
+                                }
+                            })
+                        })
+                    }
+                })
+
             },
             //显示新增界面
 			handleAdd: function () {
@@ -342,6 +375,13 @@
                 console.log("上传文件成功fileList" ,fileList);
                 // response：即为后端传来的数据，这里我返回的是图片的路径
                 this.addForm.img_url=response.data[0]
+            },
+             uploadSuccess2(response, file, fileList){
+                console.log("上传文件成功response" ,response);
+                console.log("上传文件成功file" ,file);
+                console.log("上传文件成功fileList" ,fileList);
+                // response：即为后端传来的数据，这里我返回的是图片的路径
+                this.editForm.img_url=response.data[0]
             },
              submitUpload() {
                 this.$refs.upload.submit();

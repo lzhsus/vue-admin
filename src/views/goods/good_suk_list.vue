@@ -2,50 +2,14 @@
 	<section>
 		<!--工具条-->
 		<el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
-			<el-form :inline="true" :model="filters">
-				<el-col :span="8">
-                    <el-form-item>
-					<el-input v-model="filters.class" placeholder="请输入商品class"></el-input>
-                    </el-form-item>
-                    <el-form-item>
-                        <el-button type="primary" v-on:click="queryBtn(1)">查询class</el-button>
-                    </el-form-item>
-                </el-col>
-                <el-col :span="8">
-                    <el-form-item>
-					<el-input v-model="filters.sign" placeholder="请输入商品sign"></el-input>
-                    </el-form-item>
-                    <el-form-item>
-                        <el-button type="primary" v-on:click="queryBtn(2)">查询sign</el-button>
-                    </el-form-item>
-                </el-col>
-                <el-col :span="8">
-                    <el-form-item>
-					    <el-input v-model="filters.id" placeholder="请输入商品id"></el-input>
-                    </el-form-item>
-                    <el-form-item>
-                        <el-button type="primary" v-on:click="queryBtn(3)">查询id</el-button>
-                    </el-form-item>
-                </el-col>
-			</el-form>
             <el-form :inline="true" :model="filters">
+				<el-form-item>
+					<el-input v-model="filters.order" placeholder="订单编码"></el-input>
+				</el-form-item>
+				<el-form-item>
+					<el-button type="primary" v-on:click="adminUserinfo">查询</el-button>
+				</el-form-item>
                 <el-col :span="8">
-                    <el-form-item>
-                        <el-switch v-model="filters.open" @click.native.prevent="" on-color="#00A854" on-text="启动" on-value="true" off-color="#F04134" off-text="禁止" off-value="false"></el-switch>                    
-                    </el-form-item>
-                    <el-form-item>      
-                        <el-button type="primary" v-on:click="queryBtn(4)">获取上线商品</el-button>
-                    </el-form-item>
-                </el-col>
-            </el-form>
-            <el-form :inline="true" :model="filters">
-                <el-col :span="8">
-                    <el-form-item>
-                        <el-switch v-model="filters.close" @click.native.prevent="" on-color="#00A854" on-text="启动" on-value="true" off-color="#F04134" off-text="禁止" off-value="false"></el-switch>          
-                    </el-form-item>      
-                     <el-form-item>
-                        <el-button type="primary" v-on:click="queryBtn(5)">获取下线商品</el-button>
-                    </el-form-item>
                     <el-form-item>
                         <el-button type="primary" @click="handleAdd">新增</el-button>
                     </el-form-item>
@@ -53,27 +17,15 @@
                         <el-button type="primary" @click="sx" icon="el-icon-refresh-left">刷新</el-button>
                     </el-form-item>
                 </el-col>
-            </el-form>
+			</el-form>
 		</el-col>
 		<!--列表-->
 		<template>
 			<el-table :data="users" highlight-current-row max-height="850" height="600" v-loading="loading" style="width: 100%;">
 				<el-table-column type="index" width="60"></el-table-column>
-                <el-table-column align="center" label="操作" width="120">
-					<template scope="scope">
-					    <el-button type="danger" size="small" @click="handleLook(scope.$index, scope.row)">查看详情</el-button>
-                    </template>
-                </el-table-column>
 				<el-table-column align="center" prop="id" label="ID" width="120" sortable></el-table-column>
-				<el-table-column align="center" prop="code" label="code" width="120" sortable></el-table-column>
-				<el-table-column align="center" prop="price" label="价格" min-width="120" sortable></el-table-column>				
-                <el-table-column align="center" prop="class" label="种类" width="120" sortable></el-table-column>
-				<el-table-column align="center" prop="sign" label="sign" width="120" sortable></el-table-column>
-				<el-table-column align="center" prop="name" label="name" min-width="180" sortable></el-table-column>
-				<el-table-column align="center" prop="con_explain" label="con_explain" min-width="180" sortable></el-table-column>
-                
-				<el-table-column align="center" prop="inventory" label="总数" width="120" sortable></el-table-column>
-				<el-table-column align="center" prop="page" label="page" min-width="120" sortable></el-table-column>
+				<el-table-column align="center" prop="good_id" label="good_id" width="120" sortable></el-table-column>
+				<el-table-column align="center" prop="value" label="value" width="320" sortable></el-table-column>
 				<el-table-column align="center" label="是否在线" sortable min-width="120">
                     <template slot-scope="scope">
                         <el-switch v-model="scope.row.is_on_line"
@@ -84,13 +36,8 @@
                             @change="changeSwitch(scope.row)"></el-switch>
                 　　</template>
                 </el-table-column>
-                <el-table-column align="center" label="图片">
-                　　<template slot-scope="scope">
-                    <img :src="scope.row.img_url" width="60" height="60" class="head_pic"/>
-                　　</template>
-                </el-table-column>
-				<el-table-column align="center" prop="creat_time" label="创建时间" min-width="180" sortable></el-table-column>
-                <el-table-column align="center" prop="updata_time" label="更新时间" min-width="180" sortable></el-table-column>
+				<el-table-column align="center" prop="creat_time" label="创建时间" min-width="120" sortable></el-table-column>
+                <el-table-column align="center" prop="updata_time" label="更新时间" min-width="120" sortable></el-table-column>
 
 				<el-table-column label="操作" width="150">
 					<template scope="scope">
@@ -109,46 +56,16 @@
         <!--编辑界面-->
 		<el-dialog title="编辑" v-model="editFormVisible" :close-on-click-modal="false">
 			<el-form :model="editForm" label-width="80px" ref="editForm">
-				<el-form-item label="名称" prop="name">
-					<el-input v-model="editForm.name" auto-complete="off"></el-input>
+				<el-form-item label="名称value" prop="value">
+					<el-input v-model="editForm.value" auto-complete="off"></el-input>
 				</el-form-item>
-                <el-form-item label="大类class" prop="class">
-                    <el-input v-model="editForm.class" auto-complete="off"></el-input>
+                <el-form-item label="大类good_id" prop="good_id">
+                    <el-input v-model="editForm.good_id" auto-complete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="子类sign" prop="sign">
-                    <el-input v-model="editForm.sign" auto-complete="off"></el-input>
-                </el-form-item>
-                <el-form-item label="code" prop="code">
-                    <el-input v-model="editForm.code" auto-complete="off"></el-input>
-                </el-form-item>
-                <el-form-item label="inventory数量" prop="inventory">
-                    <el-input v-model="editForm.inventory" auto-complete="off"></el-input>
-                </el-form-item>
-                <el-form-item label="page" prop="page">
-                    <el-input v-model="editForm.page" auto-complete="off"></el-input>
-                </el-form-item>
-                <el-form-item label="price" prop="price">
-                    <el-input v-model="editForm.price" auto-complete="off"></el-input>
-                </el-form-item>
-                <el-upload
-                    class="upload-demo"
-                    ref="upload"
-                    action="https://1434253600.xyz/api/upload/uploadfile"
-                    :on-preview="handlePreview"
-                    :on-change="onChange"
-                    :on-remove="handleRemove"
-                    :on-success="uploadSuccess2"
-                    :file-list="editFileList"
-                    :auto-upload="false"
-                    list-type="picture">
-                    <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
-                    <el-button style="margin-left: 10px;" size="small" type="success"  @click="submitUpload">上传到服务器</el-button>
-                    <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb，且只能上传一张</div>
-                </el-upload>
                 <!-- img_url -->
                 <el-form-item>
                     <el-form-item label="是否上线">
-                        <el-switch v-model="addForm.is_on_line" on-color="#00A854" on-text="启动" on-value="true" off-color="#F04134" off-text="禁止" off-value="false"></el-switch>          
+                        <el-switch v-model="editForm.is_on_line" on-color="#00A854" on-text="启动" on-value="true" off-color="#F04134" off-text="禁止" off-value="false"></el-switch>          
 				    </el-form-item>
                 </el-form-item> 
 			</el-form>
@@ -159,43 +76,14 @@
 		</el-dialog>
         <!--新增界面-->
 		<el-dialog title="新增" v-model="addFormVisible" :close-on-click-modal="false">
+            <div style="padding:20px;">模板：29.00-26.00-23.00-9.00</div>
 			<el-form :model="addForm" label-width="80px" ref="addForm">
-				<el-form-item label="名称" prop="name">
-					<el-input v-model="addForm.name" auto-complete="off"></el-input>
+				<el-form-item label="名称value" prop="value">
+					<el-input v-model="addForm.value" auto-complete="off"></el-input>
 				</el-form-item>
-                <el-form-item label="大类class" prop="class">
-                    <el-input v-model="addForm.class" auto-complete="off"></el-input>
+                <el-form-item label="大类good_id" prop="good_id">
+                    <el-input v-model="addForm.good_id" auto-complete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="子类sign" prop="sign">
-                    <el-input v-model="addForm.sign" auto-complete="off"></el-input>
-                </el-form-item>
-                <el-form-item label="code" prop="code">
-                    <el-input v-model="addForm.code" auto-complete="off"></el-input>
-                </el-form-item>
-                <el-form-item label="inventory数量" prop="inventory">
-                    <el-input v-model="addForm.inventory" auto-complete="off"></el-input>
-                </el-form-item>
-                <el-form-item label="page" prop="page">
-                    <el-input v-model="addForm.page" auto-complete="off"></el-input>
-                </el-form-item>
-                <el-form-item label="price" prop="price">
-                    <el-input v-model="addForm.price" auto-complete="off"></el-input>
-                </el-form-item>
-                <el-upload
-                    class="upload-demo"
-                    ref="upload"
-                    action="https://1434253600.xyz/api/upload/uploadfile"
-                    :on-preview="handlePreview"
-                    :on-change="onChange"
-                    :on-remove="handleRemove"
-                    :on-success="uploadSuccess"
-                    :file-list="fileList"
-                    :auto-upload="false"
-                    list-type="picture">
-                    <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
-                    <el-button style="margin-left: 10px;" size="small" type="success"  @click="submitUpload">上传到服务器</el-button>
-                    <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb，且只能上传一张</div>
-                </el-upload>
                 <!-- img_url -->
                 <el-form-item>
                     <el-form-item label="是否上线">
@@ -239,29 +127,17 @@
                 editFileList: [
                 ],
 				editForm: {
-                    class: "",
-                    code: '',
-                    inventory: 0,
-                    is_on_line: "false",
-                    con_explain:'',
-                    name: "",
-                    page: '',
-                    price: "",
-                    sign: "",
-                    img_url:""
+                    good_id: "",
+                    value: '',
+                    is_on_line: "false"
 				},
                 fileList: [
                 ],
+                
 				addForm: {
-                    class: "",
-                    code: '',
-                    inventory: 0,
-                    is_on_line: "false",
-                    con_explain:'',
-                    name: "",
-                    page: '',
-                    price: "",
-                    sign: ""
+                    good_id: "",
+                    value: '',
+                    is_on_line: "false"
 				}
 			}
 		},
@@ -271,7 +147,7 @@
 				return row.sex == 1 ? '男' : row.sex == 0 ? '女' : '未知';
             },
             adminUserinfo(type=0){
-                Api.admin_good_list({
+                Api.admin_suk_list({
 					page:this.page,
 					type:type
                 }).then(res=>{
@@ -289,7 +165,7 @@
                 })
 			},
 			delAdminUserinfo(row,index){
-                Api.admin_good_list({
+                Api.admin_suk_list({
 					page:this.page,
 					id:row.id,
 					token:row.token,
@@ -332,7 +208,7 @@
                     data.hint=1
                     data.is_on_line=this.filters.close
                 }
-				Api.admin_good_list(data).then(res=>{
+				Api.admin_suk_list(data).then(res=>{
                     res=JSON.parse(res)
                     if(res['success']){
                         this.$message({
@@ -384,7 +260,7 @@
                             data.type=2
                             console.log('data------',data)
                             
-                            Api.admin_good_list(data).then(res=>{
+                            Api.admin_suk_list(data).then(res=>{
                                 res=JSON.parse(res)
                                 if(res['success']){
                                     this.$message({
@@ -406,15 +282,9 @@
 			handleAdd: function () {
 				this.addFormVisible = true;
 				this.addForm = {
-                    class: "",
-                    code: '',
-                    inventory: 0,
+                    value: "",
+                    good_id: '',
                     is_on_line: "false",
-                    con_explain:'',
-                    name: "",
-                    page: '',
-                    price: "",
-                    sign: ""
 				};
             },
             //新增
@@ -425,10 +295,10 @@
 					if (valid) {
 						this.$confirm('确认提交吗？', '提示', {}).then(() => {
                             var data=this.addForm;
-                            
+                            data.page=1
                             data.type=4
 
-                            Api.admin_good_list(data).then(res=>{
+                            Api.admin_suk_list(data).then(res=>{
                                 res=JSON.parse(res)
                                 if(res['success']){
                                     this.$message({
@@ -487,7 +357,7 @@
                     is_on_line=false
                     console.log('2---',row.is_on_line)
                 }
-                Api.admin_good_list({
+                Api.admin_suk_list({
 					page:this.page,
 					id:row.id,
 					is_on_line:is_on_line,

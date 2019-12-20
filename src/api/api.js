@@ -74,6 +74,9 @@ module.exports = {
     admin_hide(data) {
         return request('api/get/admin/hide', data,"GET");
     },
+    admin_suk_list(data) {
+        return request('api/get/admin/suk_list', data,"GET");
+    },
     
 }
 // var sreverPath="https://1434253600.xyz/";
@@ -101,8 +104,7 @@ function request(url, data={}, type) {
             }
         })
         .fail(res=> {
-            vueApp.alert('网络错误请重试！'); 
-
+            alert('网络错误请重试！'); 
             resolve(res);
         })
         .always(res=>{

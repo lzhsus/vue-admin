@@ -13,28 +13,52 @@
 		</el-col>
 		<!--列表-->
 		<template>
-			<el-table :data="users" highlight-current-row max-height="850" height="600" v-loading="loading" style="width: 100%;">
-				<el-table-column type="index" width="60">
+			<el-table :data="users" highlight-current-row  height="400" v-loading="loading" style="width: 100%;height:100%;">
+				<el-table-column type="index" width="80">
 				</el-table-column>
-				<el-table-column align="center" prop="id" label="ID" width="120" sortable></el-table-column>
+				<el-table-column align="center" prop="id" label="ID" width="80" sortable></el-table-column>
 				<el-table-column align="center" prop="goods_id" label="商品id" width="120" sortable></el-table-column>
                 
-				<el-table-column align="center" prop="out_trade_no" label="订单编码" min-width="180" sortable>
+				<el-table-column align="center" prop="out_trade_no" label="订单编码" min-width="220" sortable>
                     <template slot-scope="scope">
-                        <el-link href="https://element.eleme.io" type="success">{{scope.row.out_trade_no}}<i class="el-icon-view el-icon--right"></i></el-link>
+                        {{scope.row.out_trade_no}}
 
                 <!-- 　　　　<img :src="scope.row.goods_img_url" width="60" height="60" class="head_pic"/> -->
                 　　</template>
 				</el-table-column> 
-				<el-table-column align="center" prop="goods_name" label="商品名称" width="120" sortable></el-table-column>
+				<el-table-column align="center" prop="goods_name" label="商品名称" width="200" sortable></el-table-column>
 				<el-table-column align="center" prop="goods_price" label="商品价钱" width="120" sortable></el-table-column>
                 <el-table-column align="center" label="商品图片">
                 　　<template slot-scope="scope">
                 　　　　<img :src="scope.row.goods_img_url" width="60" height="60" class="head_pic"/>
                 　　</template>
                 </el-table-column>
-				<el-table-column align="center" prop="status" label="状态" min-width="180" sortable>
+				<el-table-column align="center" prop="status" label="状态" min-width="160" sortable>
+					<template slot-scope="scope">
+						<div v-if="!scope.row.status">{{scope.row.status}}未付款</div>
+						<div v-if="scope.row.status==3">{{scope.row.status}}已付款</div>
+						<div v-if="scope.row.status==7">{{scope.row.status}}已发货</div>
+						<div v-if="scope.row.status==4">{{scope.row.status}}已签收</div>
+						<div v-if="scope.row.status==5">{{scope.row.status}}已完成</div>
+						<div v-if="scope.row.status==6">{{scope.row.status}}申请退款中</div>
+						<div v-if="scope.row.status==8">{{scope.row.status}}已退款</div>
+						<div v-if="scope.row.status==-1">{{scope.row.status}}已取消</div>
+						<el-button v-if="scope.row.status==3" type="primary" v-on:click="fahuoBtn(scope.row)">发货</el-button>
+						<el-button v-if="scope.row.status==6" type="primary" v-on:click="fahuoBtn2(scope.row)">确认退款</el-button>
+
+                <!-- 　　　　<img :src="scope.row.goods_img_url" width="60" height="60" class="head_pic"/> -->
+                　　</template>
 				</el-table-column>
+
+				<el-table-column align="center" prop="all_day" label="总天数" min-width="100" sortable>
+				</el-table-column>
+				<el-table-column align="center" prop="all_price" label="总价钱" min-width="120" sortable>
+				</el-table-column>
+				<el-table-column align="center" prop="start_time" label="开始时间" min-width="180" sortable>
+				</el-table-column>
+				<el-table-column align="center" prop="end_time" label="结束时间" min-width="180" sortable>
+				</el-table-column>
+
 				<el-table-column align="center" prop="token" label="token" min-width="180" sortable>
 				</el-table-column>
 				<el-table-column align="center" prop="receiver_info_mobile" label="收货人电话" min-width="180" sortable>
@@ -109,7 +133,7 @@
                 })
 			},
 			delAdminUserinfo(id,index){
-                Api.admin_openid({
+                Api.admin_order_list({
 					page:this.page,
 					id:id,
 					type:3
@@ -178,6 +202,43 @@
 				this.editFormVisible = true;
 				this.editForm = Object.assign({}, row);
 			},
+			fahuoBtn(row){
+				console.log(row)
+				Api.admin_order_list({
+					page:this.page,
+					id:row.id,
+					status:7,
+					type:2
+                }).then(res=>{
+                    res=JSON.parse(res)
+                    if(res['success']){
+                        this.$message({
+							message: '操作成功',
+							type: 'success'
+						});
+                    }else{
+						this.$message.error('删除失败！');
+                    }
+                })
+			},
+			fahuoBtn2(row){
+				Api.admin_order_list({
+					page:this.page,
+					id:row.id,
+					status:8,
+					type:2
+                }).then(res=>{
+                    res=JSON.parse(res)
+                    if(res['success']){
+                        this.$message({
+							message: '操作成功',
+							type: 'success'
+						});
+                    }else{
+						this.$message.error('删除失败！');
+                    }
+                })
+			}
 		},
 		mounted() {
             // this.getUser();

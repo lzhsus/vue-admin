@@ -30,6 +30,8 @@ import detail from './views/order/detail.vue'
 import goodAll from './views/goods/good_all.vue'
 import goodClass from './views/goods/good_class.vue'
 import goodBanner from './views/goods/good_banner.vue'
+import goodSukList from './views/goods/good_suk_list.vue'
+
 /**
  * 活动
  */
@@ -78,7 +80,8 @@ let routes = [
         children: [
             { path: '/goodAll', component: goodAll, name: 'goodAll',},
             { path: '/goodClass', component: goodClass, name: 'goodClass',},
-            { path: '/goodBanner', component: goodBanner, name: 'goodBanner',}
+            { path: '/goodBanner', component: goodBanner, name: 'goodBanner',},
+            { path: '/goodSukList', component: goodSukList, name: 'goodSukList',}
         ]
     },{
         path: '/',

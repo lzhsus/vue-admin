@@ -12,7 +12,6 @@
                 <el-form-item>
 					<el-button type="primary" v-on:click="updataFunc">更新</el-button>
 				</el-form-item>
-                
 			</el-form>
 		</el-col>
         <!-- 列表 -->
